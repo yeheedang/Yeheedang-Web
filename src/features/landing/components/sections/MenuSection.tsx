@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import Image from 'next/image'
 import styled from '@emotion/styled'
 import { keyframes } from '@emotion/react'
 import {
@@ -228,7 +229,16 @@ const CardDesc = styled.div`
   font-size: 0.75rem;
   line-height: 1.6;
   color: ${COLOR_YEHI_GREY};
-  flex: 1;
+`
+
+const CardImageWrap = styled.div`
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: ${RADIUS_LG};
+  overflow: hidden;
+  background: rgba(235, 203, 203, 0.15);
+  flex-shrink: 0;
 `
 
 const CardPrice = styled.div`
@@ -358,6 +368,17 @@ export function MenuSection() {
                 <CardName>{item.name}</CardName>
                 <CardNameEn>{item.nameEn}</CardNameEn>
                 <CardDesc>{item.desc}</CardDesc>
+                <CardImageWrap>
+                  {item.image && (
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                      sizes="330px"
+                    />
+                  )}
+                </CardImageWrap>
                 <CardPrice>₩ {formatPrice(item.price)}</CardPrice>
               </MenuCard>
             ))}

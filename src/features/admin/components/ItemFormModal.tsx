@@ -1,7 +1,8 @@
 /** @jsxImportSource @emotion/react */
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import { css } from '@emotion/react'
 import type { MenuItem } from '../types'
 import {
@@ -47,6 +48,8 @@ const modalStyle = css`
   display: flex;
   flex-direction: column;
   gap: ${SPACE_4};
+  max-height: 90vh;
+  overflow-y: auto;
 `
 
 const modalTitleStyle = css`
@@ -88,6 +91,56 @@ const textareaStyle = css`
   min-height: 72px;
 `
 
+const imageUploadAreaStyle = css`
+  border: 1.5px dashed ${COLOR_YEHI_GREY};
+  border-radius: ${RADIUS_MD};
+  padding: ${SPACE_4};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${SPACE_3};
+  cursor: pointer;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: ${COLOR_WALNUT};
+  }
+`
+
+const imagePreviewStyle = css`
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: ${RADIUS_MD};
+  overflow: hidden;
+`
+
+const imageHintStyle = css`
+  font-size: 0.75rem;
+  color: ${COLOR_WALNUT_LIGHT};
+  text-align: center;
+`
+
+const imageRemoveBtnStyle = css`
+  font-size: 0.7rem;
+  color: #e57373;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+`
+
+const uploadingStyle = css`
+  font-size: 0.75rem;
+  color: ${COLOR_WALNUT_LIGHT};
+`
+
+const errorStyle = css`
+  font-size: 0.75rem;
+  color: #e57373;
+`
+
 const buttonRowStyle = css`
   display: flex;
   gap: ${SPACE_3};
@@ -107,6 +160,11 @@ const primaryBtnStyle = css`
 
   &:hover {
     background: ${COLOR_WALNUT_DARK};
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 `
 
@@ -130,21 +188,16 @@ function generateItemId(categoryId: string): string {
 }
 
 export function ItemFormModal({ categoryId, item, onSave, onClose }: ItemFormModalProps) {
-  const [form, setForm] = useState({
-    name: '',
-    nameEn: '',
-    desc: '',
-    price: '',
-  })
+  const [form, setForm] = useState({ name: '', nameEn: '', desc: '', price: '' })
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (item) {
-      setForm({
-        name: item.name,
-        nameEn: item.nameEn,
-        desc: item.desc,
-        price: item.price,
-      })
+      setForm({ name: item.name, nameEn: item.nameEn, desc: item.desc, price: item.price })
+      setImageUrl(item.image ?? null)
     }
   }, [item])
 
@@ -152,6 +205,30 @@ export function ItemFormModal({ categoryId, item, onSave, onClose }: ItemFormMod
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }))
+  }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploadError(null)
+    setIsUploading(true)
+
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const res = await fetch('/api/admin/upload', { method: 'POST', body: formData })
+    const data = await res.json()
+
+    setIsUploading(false)
+
+    if (!res.ok) {
+      setUploadError(data.error ?? '업로드 실패')
+      return
+    }
+
+    setImageUrl(data.url)
+    e.target.value = ''
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -164,11 +241,11 @@ export function ItemFormModal({ categoryId, item, onSave, onClose }: ItemFormMod
       nameEn: form.nameEn.trim(),
       desc: form.desc.trim(),
       price: form.price.trim(),
-      image: item?.image ?? null,
+      image: imageUrl,
     })
   }
 
-  const isValid = form.name.trim() && form.price.trim()
+  const isValid = form.name.trim() && form.price.trim() && !isUploading
 
   return (
     <div css={overlayStyle} onClick={onClose}>
@@ -188,6 +265,37 @@ export function ItemFormModal({ categoryId, item, onSave, onClose }: ItemFormMod
         <div css={fieldStyle}>
           <label css={labelStyle}>설명</label>
           <textarea css={textareaStyle} value={form.desc} onChange={handleChange('desc')} placeholder="메뉴 설명을 입력하세요" />
+        </div>
+
+        <div css={fieldStyle}>
+          <label css={labelStyle}>이미지</label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/avif"
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+          />
+          <div css={imageUploadAreaStyle} onClick={() => fileInputRef.current?.click()}>
+            {imageUrl ? (
+              <div css={imagePreviewStyle}>
+                <Image src={imageUrl} alt="메뉴 이미지" fill style={{ objectFit: 'cover' }} sizes="440px" />
+              </div>
+            ) : (
+              <span css={imageHintStyle}>클릭하여 이미지 업로드 (jpg, png, webp, avif · 최대 5MB)</span>
+            )}
+            {isUploading && <span css={uploadingStyle}>업로드 중...</span>}
+            {uploadError && <span css={errorStyle}>{uploadError}</span>}
+          </div>
+          {imageUrl && (
+            <button
+              css={imageRemoveBtnStyle}
+              type="button"
+              onClick={() => setImageUrl(null)}
+            >
+              이미지 제거
+            </button>
+          )}
         </div>
 
         <div css={fieldStyle}>

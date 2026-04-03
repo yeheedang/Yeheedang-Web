@@ -168,8 +168,7 @@ export function ContactSection() {
           <InfoGroup>
             <InfoLabel>주소</InfoLabel>
             <InfoValue>
-              서울특별시 종로구 인사동길 12<br />
-              예히당 빌딩 1층
+              서울특별시 강북구 미아동 오폐산로 37길 22 1층 
             </InfoValue>
           </InfoGroup>
 
@@ -177,11 +176,9 @@ export function ContactSection() {
             <InfoLabel>영업시간</InfoLabel>
             <InfoValue>
               <HoursTable>
-                <HoursDay>화 — 금</HoursDay>
-                <HoursTime>11:00 — 21:00</HoursTime>
-                <HoursDay>토 — 일</HoursDay>
-                <HoursTime>10:00 — 22:00</HoursTime>
-                <HoursDay>월요일</HoursDay>
+                <HoursDay>월 — 토</HoursDay>
+                <HoursTime>10:00 — 19:30</HoursTime>
+                <HoursDay>일요일</HoursDay>
                 <HoursTime>정기 휴무</HoursTime>
               </HoursTable>
             </InfoValue>
@@ -189,13 +186,13 @@ export function ContactSection() {
 
           <InfoGroup>
             <InfoLabel>연락처</InfoLabel>
-            <InfoValue>02-000-0000</InfoValue>
+            <InfoValue>[대표번호] 010 - 4927 - 9788</InfoValue>
           </InfoGroup>
 
           <InfoGroup>
             <InfoLabel>교통</InfoLabel>
             <InfoValue>
-              지하철 3호선 안국역 6번 출구<br />
+              지하철 4호선 미아사거리역 1번 출구<br />
               도보 5분
             </InfoValue>
           </InfoGroup>
@@ -206,7 +203,7 @@ export function ContactSection() {
         <MapPlaceholder>
           <MapIcon>◎</MapIcon>
           <span>지도는 준비 중입니다</span>
-          <span style={{ fontSize: '0.7rem', opacity: 0.7 }}>서울 종로구 인사동</span>
+          <span style={{ fontSize: '0.7rem', opacity: 0.7 }}>서울시 강북구 미아동</span>
         </MapPlaceholder>
       </MapColumn>
     </Section>

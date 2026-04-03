@@ -183,7 +183,7 @@ export function HeroSection() {
       <EyebrowText>한국의 멋을 살린 수제 화과자 & 답례품</EyebrowText>
       <Divider />
       <Tagline>
-        모든날, 모든순간 <br/>
+        모든 날, 모든 순간 <br/>
         예히당만의 한국의 멋을 살린 <br/>
         디저트와 답례품이 소중한 순간을 채워드립니다.
       </Tagline>

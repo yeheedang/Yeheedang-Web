@@ -81,7 +81,7 @@ const BodyText = styled.p`
   line-height: 2;
   color: ${COLOR_YEHI_GREY};
   margin: 0;
-  max-width: 480px;
+  max-width: 495px;
 `
 
 const ValuesList = styled.ul`
@@ -109,6 +109,49 @@ const ValueItem = styled.li`
     margin-top: 3px;
     flex-shrink: 0;
   }
+`
+
+const AwardsList = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: ${SPACE_4};
+`
+
+const AwardItem = styled.li`
+  display: flex;
+  align-items: flex-start;
+  gap: ${SPACE_4};
+  font-family: ${FONT_BODY};
+  font-size: 0.8rem;
+  color: ${COLOR_YEHI_GREY};
+  line-height: 1.5;
+
+  &::before {
+    content: '✦';
+    color: ${COLOR_WALNUT};
+    font-size: 0.55rem;
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+`
+
+const AwardEyebrow = styled.span`
+  font-family: ${FONT_ACCENT};
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: ${COLOR_WALNUT};
+  display: block;
+  margin-bottom: ${SPACE_4};
+`
+
+const Divider = styled.hr`
+  border: none;
+  border-top: 1px solid rgba(74, 55, 40, 0.15);
+  margin: 0;
 `
 
 const DecoColumn = styled.div`
@@ -178,23 +221,29 @@ export function AboutSection() {
       <TextColumn>
         <EyebrowText>Our Story</EyebrowText>
         <Heading>
-          예(禮)와 희(喜)가<br />
-          만나는 자리
+          모든 날, 모든 순간<br />
+          예히당과 함께
         </Heading>
         <BodyText>
-          예히당은 예의와 기쁨이 공존하는 공간입니다.
-          한국의 전통 디저트를 현대적 감각으로 재해석하여,
-          계절의 맛과 정성이 담긴 한과를 선보입니다.
+          예히당은 15년 요리강사 경력의 특제 레시피와 <br/>
+          엄선한 국내산 재료로 만드는 답례품 전문 카페입니다.<br/>
+          한국의 색을 담은 화과자와 함께 호두정과, 오란다, 양갱  등 <br/>
+          다양한 전통 디저트를 담아냅니다.
         </BodyText>
         <BodyText>
-          오랜 전통 조리법을 바탕으로, 국내산 재료만을 엄선하여
-          하나하나 손으로 빚어 만드는 예히당만의 이야기를 담았습니다.
+          예히당을 찾는 모든 분들에게 행복하고 건강한 삶이 오래도록 이어지길 바라는 마음으로,
+          어버이날·스승의날·추석·설날·생일·칠순·상견례·결혼식 답례품 등 소중한 모든 순간을 함께합니다.
         </BodyText>
-        <ValuesList>
-          <ValueItem>국내산 재료만을 엄선하여 사용합니다</ValueItem>
-          <ValueItem>전통 조리법을 현대적으로 재해석합니다</ValueItem>
-          <ValueItem>계절마다 새로운 메뉴를 선보입니다</ValueItem>
-        </ValuesList>
+        <Divider />
+        <div>
+          <AwardEyebrow>Awards</AwardEyebrow>
+          <AwardsList>
+            <AwardItem>2023 대한민국 국제요리&amp;제과경연대회 전시경연 대상</AwardItem>
+            <AwardItem>2023 대한민국 국제요리&amp;제과경연대회 찬요리 대상</AwardItem>
+            <AwardItem>경기도지사 · 문화체육관광부 장관상 수상</AwardItem>
+            <AwardItem>2019 쌀요리경연대회 우수상</AwardItem>
+          </AwardsList>
+        </div>
       </TextColumn>
 
       <DecoColumn>
