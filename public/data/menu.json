@@ -1,0 +1,144 @@
+{
+  "categories": [
+    {
+      "id": "hangwa",
+      "label": "한과"
+    },
+    {
+      "id": "tteok",
+      "label": "떡"
+    },
+    {
+      "id": "drink",
+      "label": "음료"
+    }
+  ],
+  "items": {
+    "hangwa": [
+      {
+        "id": "hangwa-1",
+        "name": "매화 약과",
+        "nameEn": "Plum Blossom Yak-gwa",
+        "desc": "국내산 꿀과 생강으로 만든 전통 약과",
+        "price": "5500",
+        "image": null
+      },
+      {
+        "id": "hangwa-2",
+        "name": "흑임자 강정",
+        "nameEn": "Black Sesame Gangjung",
+        "desc": "볶은 흑임자의 고소함이 살아있는 한과",
+        "price": "4500",
+        "image": null
+      },
+      {
+        "id": "hangwa-3",
+        "name": "대추 다식",
+        "nameEn": "Jujube Dasik",
+        "desc": "대추와 오미자로 만든 전통 다식",
+        "price": "4000",
+        "image": null
+      },
+      {
+        "id": "hangwa-4",
+        "name": "오색 정과",
+        "nameEn": "Five-Color Jeong-gwa",
+        "desc": "계절 과채로 만든 전통 정과 모둠",
+        "price": "7000",
+        "image": null
+      },
+      {
+        "id": "hangwa-1775194420219",
+        "name": "화과자",
+        "nameEn": "wagawashi",
+        "desc": "국내산 쌀을 이용한 화과자",
+        "price": "5000",
+        "image": null
+      },
+      {
+        "id": "hangwa-1775194758462",
+        "name": "test 4",
+        "nameEn": "",
+        "desc": "123123",
+        "price": "3000",
+        "image": null
+      },
+      {
+        "id": "hangwa-1775194773354",
+        "name": "test 2",
+        "nameEn": "",
+        "desc": "",
+        "price": "123213",
+        "image": null
+      }
+    ],
+    "tteok": [
+      {
+        "id": "tteok-1",
+        "name": "인절미",
+        "nameEn": "Injeolmi",
+        "desc": "국내산 찹쌀과 콩고물로 만든 인절미",
+        "price": "5000",
+        "image": null
+      },
+      {
+        "id": "tteok-2",
+        "name": "백설기",
+        "nameEn": "Baekseolgi",
+        "desc": "쌀가루로 빚은 순백의 시루떡",
+        "price": "4500",
+        "image": null
+      },
+      {
+        "id": "tteok-3",
+        "name": "팥고물 송편",
+        "nameEn": "Red Bean Songpyeon",
+        "desc": "팥소를 넣어 빚은 반달 모양 송편",
+        "price": "5500",
+        "image": null
+      },
+      {
+        "id": "tteok-4",
+        "name": "화전",
+        "nameEn": "Hwajeon",
+        "desc": "계절 꽃을 올린 찹쌀 화전",
+        "price": "6000",
+        "image": null
+      }
+    ],
+    "drink": [
+      {
+        "id": "drink-1",
+        "name": "오미자 에이드",
+        "nameEn": "Omija Ade",
+        "desc": "국내산 오미자로 만든 새콤달콤한 에이드",
+        "price": "6500",
+        "image": null
+      },
+      {
+        "id": "drink-2",
+        "name": "식혜",
+        "nameEn": "Sikhye",
+        "desc": "전통 방식으로 만든 단 쌀음료",
+        "price": "5500",
+        "image": null
+      },
+      {
+        "id": "drink-3",
+        "name": "쌍화차",
+        "nameEn": "Ssanghwa Tea",
+        "desc": "전통 약재를 우린 쌍화차",
+        "price": "6000",
+        "image": null
+      },
+      {
+        "id": "drink-4",
+        "name": "유자청 음료",
+        "nameEn": "Yuzu Citron Drink",
+        "desc": "국내산 유자청으로 만든 상큼한 음료",
+        "price": "6000",
+        "image": null
+      }
+    ]
+  }
+}

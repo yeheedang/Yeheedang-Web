@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp -r temp-next/. .)",
+      "Bash(rm -rf temp-next)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run:*)",
+      "Bash(xargs grep:*)"
+    ]
+  }
+}
