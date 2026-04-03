@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readFile, writeFile } from 'fs/promises'
+import { head, put } from '@vercel/blob'
+import { readFile } from 'fs/promises'
 import path from 'path'
 
-const MENU_FILE_PATH = path.join(process.cwd(), 'public', 'data', 'menu.json')
+const MENU_BLOB_KEY = 'data/menu.json'
 const ADMIN_COOKIE_NAME = 'yehi_admin_session'
 
 function isAuthenticated(request: NextRequest): boolean {
@@ -11,14 +12,35 @@ function isAuthenticated(request: NextRequest): boolean {
   return !!expectedSession && sessionCookie?.value === expectedSession
 }
 
+async function fetchMenuFromBlob(): Promise<object | null> {
+  try {
+    const info = await head(MENU_BLOB_KEY)
+    const res = await fetch(info.url, { cache: 'no-store' })
+    if (!res.ok) return null
+    return res.json()
+  } catch {
+    return null
+  }
+}
+
+async function fetchMenuFromLocal(): Promise<object> {
+  const filePath = path.join(process.cwd(), 'public', 'data', 'menu.json')
+  const raw = await readFile(filePath, 'utf-8')
+  return JSON.parse(raw)
+}
+
 export async function GET(request: NextRequest) {
   if (!isAuthenticated(request)) {
     return NextResponse.json({ error: '인증이 필요합니다.' }, { status: 401 })
   }
 
-  const raw = await readFile(MENU_FILE_PATH, 'utf-8')
-  const data = JSON.parse(raw)
-  return NextResponse.json(data)
+  const blobData = await fetchMenuFromBlob()
+  if (blobData) {
+    return NextResponse.json(blobData)
+  }
+
+  const localData = await fetchMenuFromLocal()
+  return NextResponse.json(localData)
 }
 
 export async function PUT(request: NextRequest) {
@@ -31,6 +53,11 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: '올바르지 않은 데이터 형식입니다.' }, { status: 400 })
   }
 
-  await writeFile(MENU_FILE_PATH, JSON.stringify(body, null, 2), 'utf-8')
+  await put(MENU_BLOB_KEY, JSON.stringify(body), {
+    access: 'public',
+    contentType: 'application/json',
+    addRandomSuffix: false,
+  })
+
   return NextResponse.json({ ok: true })
 }
