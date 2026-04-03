@@ -40,7 +40,7 @@ const Section = styled.section`
   }
 
   @media (max-width: ${BREAKPOINT_MOBILE}px) {
-    padding: ${SPACE_10} ${SPACE_8};
+    padding: 80px ${SPACE_8} ${SPACE_8};
     text-align: center;
     align-content: center;
   }

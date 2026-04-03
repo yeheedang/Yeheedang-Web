@@ -34,7 +34,7 @@ const ItemWrapper = styled.button<{ isActive: boolean; isDisabled: boolean }>`
 
   &:hover .nav-label {
     opacity: 1;
-    transform: rotate(180deg) translateY(0);
+    transform: rotate(0deg) translateY(0);
     color: ${COLOR_WALNUT};
   }
 
@@ -55,7 +55,7 @@ const Label = styled.span<{ isActive: boolean }>`
   transition: color 300ms ease, opacity 300ms ease, transform 300ms ease;
   opacity: ${({ isActive }) => (isActive ? 1 : 0)};
   transform: ${({ isActive }) =>
-    isActive ? 'rotate(180deg) translateY(0)' : 'rotate(180deg) translateY(4px)'};
+    isActive ? 'rotate(0deg) translateY(0)' : 'rotate(0deg) translateY(4px)'};
 `
 
 const Dot = styled.span<{ isActive: boolean }>`

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import styled from '@emotion/styled'
 import { keyframes } from '@emotion/react'
 import {
@@ -17,6 +17,7 @@ import {
   SPACE_10,
   SPACE_12,
   SPACE_16,
+  SPACE_20,
   RADIUS_LG,
   RADIUS_PILL,
   BREAKPOINT_MOBILE,
@@ -32,15 +33,12 @@ const fadeIn = keyframes`
 const CARD_HEIGHT = '420px'
 const SCROLL_AMOUNT = 360
 
-const NAV_WIDTH = '72px'
-
 const Section = styled.section`
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: ${SPACE_12} clamp(${SPACE_12}, 8vw, ${SPACE_16});
-  padding-right: calc(${NAV_WIDTH} + clamp(${SPACE_12}, 8vw, ${SPACE_16}));
+  padding: ${SPACE_12} clamp(${SPACE_16}, 8vw, ${SPACE_20});
   gap: ${SPACE_8};
 
   @media (max-width: ${BREAKPOINT_MOBILE}px) {
@@ -157,16 +155,18 @@ const CarouselArrow = styled.button`
   }
 `
 
-const MenuGrid = styled.div`
+const MenuGrid = styled.div<{ isDragging: boolean }>`
   display: flex;
   flex-direction: row;
   gap: ${SPACE_4};
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
+  scroll-snap-type: ${({ isDragging }) => (isDragging ? 'none' : 'x mandatory')};
   -webkit-overflow-scrolling: touch;
   height: ${CARD_HEIGHT};
   padding-bottom: ${SPACE_2};
-  scroll-behavior: smooth;
+  scroll-behavior: ${({ isDragging }) => (isDragging ? 'auto' : 'smooth')};
+  cursor: ${({ isDragging }) => (isDragging ? 'grabbing' : 'grab')};
+  user-select: none;
 
   scrollbar-width: none;
   &::-webkit-scrollbar {
@@ -179,7 +179,7 @@ const MenuGrid = styled.div`
   }
 `
 
-const MenuCard = styled.div`
+const MenuCard = styled.div<{ isDragging: boolean }>`
   flex: 0 0 330px;
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(235, 203, 203, 0.4);
@@ -193,6 +193,7 @@ const MenuCard = styled.div`
   scroll-snap-align: start;
   height: 100%;
   box-sizing: border-box;
+  pointer-events: ${({ isDragging }) => (isDragging ? 'none' : 'auto')};
 
   &:hover {
     border-color: rgba(74, 55, 40, 0.25);
@@ -247,7 +248,9 @@ export function MenuSection() {
   const [activeCategory, setActiveCategory] = useState<string>('')
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
   const gridRef = useRef<HTMLDivElement>(null)
+  const dragState = useRef({ startX: 0, scrollLeft: 0, active: false })
 
   useEffect(() => {
     fetch('/api/menu')
@@ -280,6 +283,28 @@ export function MenuSection() {
       ro.disconnect()
     }
   }, [activeCategory, menuData])
+
+  const onMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const el = gridRef.current
+    if (!el) return
+    dragState.current = { startX: e.pageX - el.offsetLeft, scrollLeft: el.scrollLeft, active: true }
+    setIsDragging(true)
+  }, [])
+
+  const onMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!dragState.current.active) return
+    e.preventDefault()
+    const el = gridRef.current
+    if (!el) return
+    const x = e.pageX - el.offsetLeft
+    const walk = x - dragState.current.startX
+    el.scrollLeft = dragState.current.scrollLeft - walk
+  }, [])
+
+  const onDragEnd = useCallback(() => {
+    dragState.current.active = false
+    setIsDragging(false)
+  }, [])
 
   const scroll = (dir: 'left' | 'right') => {
     const el = gridRef.current
@@ -318,9 +343,18 @@ export function MenuSection() {
         </CarouselArrow>
 
         <CarouselWrapper>
-          <MenuGrid ref={gridRef} key={activeCategory} role="tabpanel">
+          <MenuGrid
+            ref={gridRef}
+            key={activeCategory}
+            role="tabpanel"
+            isDragging={isDragging}
+            onMouseDown={onMouseDown}
+            onMouseMove={onMouseMove}
+            onMouseUp={onDragEnd}
+            onMouseLeave={onDragEnd}
+          >
             {activeItems.map((item: MenuItem) => (
-              <MenuCard key={item.id}>
+              <MenuCard key={item.id} isDragging={isDragging}>
                 <CardName>{item.name}</CardName>
                 <CardNameEn>{item.nameEn}</CardNameEn>
                 <CardDesc>{item.desc}</CardDesc>

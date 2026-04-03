@@ -16,6 +16,7 @@ import {
   SPACE_10,
   SPACE_12,
   SPACE_16,
+  SPACE_20,
   RADIUS_MD,
   RADIUS_LG,
   BREAKPOINT_MOBILE,
@@ -34,13 +35,13 @@ const Section = styled.section`
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
-  padding: ${SPACE_12} clamp(${SPACE_12}, 8vw, ${SPACE_16});
+  padding: ${SPACE_12} clamp(${SPACE_16}, 8vw, ${SPACE_20});
   gap: ${SPACE_12};
 
   @media (max-width: ${BREAKPOINT_TABLET}px) {
     grid-template-columns: 1fr;
     overflow-y: auto;
-    padding: ${SPACE_10} ${SPACE_8};
+    padding: 80px ${SPACE_8} ${SPACE_8};
     align-content: center;
   }
 `

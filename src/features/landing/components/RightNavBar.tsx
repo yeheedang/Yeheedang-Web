@@ -33,10 +33,6 @@ const NavBar = styled.nav`
   justify-content: center;
   padding: 0 ${SPACE_6};
   gap: ${SPACE_8};
-  background: rgba(250, 246, 240, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-left: 1px solid rgba(235, 203, 203, 0.3);
 
   @media (max-width: ${BREAKPOINT_MOBILE}px) {
     display: none;

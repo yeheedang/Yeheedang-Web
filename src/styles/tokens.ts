@@ -5,8 +5,8 @@ export const COLOR_WALNUT = '#4a3728'
 export const COLOR_WALNUT_LIGHT = '#7a5c48'
 export const COLOR_WALNUT_DARK = '#2e2019'
 export const COLOR_INK = '#1a1210'
-export const COLOR_HANJI_PAPER = '#fffff'
-export const COLOR_HANJI_WARM = '#ffffff'
+export const COLOR_HANJI_PAPER = '#faf6f0'
+export const COLOR_HANJI_WARM = '#f5efe6'
 
 // Spacing (base-4 scale)
 export const SPACE_1 = '4px'

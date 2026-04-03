@@ -8,6 +8,7 @@ import { HeroSection } from './components/sections/HeroSection'
 import { AboutSection } from './components/sections/AboutSection'
 import { MenuSection } from './components/sections/MenuSection'
 import { ContactSection } from './components/sections/ContactSection'
+import { useScrollNavigation } from './hooks/useScrollNavigation'
 import type { SectionId } from './types'
 
 const SECTION_MAP: Record<SectionId, React.ComponentType> = {
@@ -20,6 +21,8 @@ const SECTION_MAP: Record<SectionId, React.ComponentType> = {
 export function LandingPage() {
   const activeSection = useLandingStore((s) => s.activeSection)
   const ActiveSection = SECTION_MAP[activeSection]
+
+  useScrollNavigation()
 
   return (
     <PageShell>
