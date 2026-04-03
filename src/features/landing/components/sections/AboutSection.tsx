@@ -148,17 +148,14 @@ const DecoFrame = styled.div`
   }
 `
 
-const DecoCharacter = styled.div`
+const DecoCharacter = styled.img`
   position: absolute;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: ${FONT_DISPLAY};
-  font-size: clamp(5rem, 10vw, 8rem);
-  font-weight: 300;
-  color: rgba(74, 55, 40, 0.12);
-  letter-spacing: -0.05em;
+  width: 70%;
+  height: auto;
+  margin: auto;
+  object-fit: contain;
+  opacity: 0.15;
   user-select: none;
 `
 
@@ -202,8 +199,8 @@ export function AboutSection() {
 
       <DecoColumn>
         <DecoFrame>
-          <DecoCharacter>禮喜</DecoCharacter>
-          <DecoSubText>Since 2024</DecoSubText>
+          <DecoCharacter src="/Logo.png" alt="예히당" />
+          <DecoSubText>Since 2020</DecoSubText>
         </DecoFrame>
       </DecoColumn>
     </Section>

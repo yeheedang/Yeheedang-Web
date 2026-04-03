@@ -5,7 +5,6 @@ import { keyframes } from '@emotion/react'
 import {
   COLOR_WALNUT,
   COLOR_YEHI_GREY,
-  COLOR_INK,
   COLOR_WALNUT_LIGHT,
   SPACE_4,
   SPACE_6,
@@ -13,6 +12,7 @@ import {
   SPACE_12,
   SPACE_16,
   BREAKPOINT_MOBILE,
+  SPACE_20,
 } from '@/styles/tokens'
 import { FONT_DISPLAY, FONT_BODY, FONT_ACCENT } from '@/styles/typography'
 import { useLandingStore } from '../../store/useLandingStore'
@@ -47,7 +47,7 @@ const Section = styled.section`
 
 const EyebrowText = styled.span`
   font-family: ${FONT_ACCENT};
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: ${COLOR_WALNUT};
@@ -60,14 +60,10 @@ const EyebrowText = styled.span`
   }
 `
 
-const BrandName = styled.h1`
-  font-family: ${FONT_DISPLAY};
-  font-size: clamp(4rem, 10vw, 8rem);
-  font-weight: 300;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  color: ${COLOR_INK};
-  margin: 0 0 ${SPACE_4} 0;
+const LogoImage = styled.img`
+  height: clamp(4rem, 10vw, 8rem);
+  width: auto;
+  margin: 0 0 ${SPACE_16} 0;
   animation: ${fadeUp} 700ms ease 200ms both;
 
   @media (prefers-reduced-motion: reduce) {
@@ -183,20 +179,19 @@ export function HeroSection() {
 
   return (
     <Section>
-      <EyebrowText>Korean Traditional Dessert Café</EyebrowText>
-      <BrandName>예히당</BrandName>
-      <BrandSubtitle>禮喜堂</BrandSubtitle>
+      <LogoImage src="/Logo.png" alt="예히당" />
+      <EyebrowText>한국의 멋을 살린 수제 화과자 & 답례품</EyebrowText>
       <Divider />
       <Tagline>
-        전통의 맛과 현대의 감성이 만나는 곳.<br />
-        정성껏 만든 한과와 음료로<br />
-        당신의 하루를 채워드립니다.
+        모든날, 모든순간 <br/>
+        예히당만의 한국의 멋을 살린 <br/>
+        디저트와 답례품이 소중한 순간을 채워드립니다.
       </Tagline>
       <ScrollCta onClick={() => navigateTo('about')}>
         예히당 알아보기
         <ArrowLine />
       </ScrollCta>
-      <DecoCorner>禮</DecoCorner>
+      <DecoCorner>יהי</DecoCorner>
     </Section>
   )
 }

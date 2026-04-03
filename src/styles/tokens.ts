@@ -1,5 +1,5 @@
 // Colors
-export const COLOR_YEHI_GREY = '#ebcbcb'
+export const COLOR_YEHI_GREY = '#595959'
 export const COLOR_WHITE = '#ffffff'
 export const COLOR_WALNUT = '#4a3728'
 export const COLOR_WALNUT_LIGHT = '#7a5c48'

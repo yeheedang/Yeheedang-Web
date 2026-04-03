@@ -7,7 +7,10 @@
       "Bash(npx tsc:*)",
       "Bash(npm run:*)",
       "Bash(xargs grep:*)",
-      "Bash(node -e \"console.log\\(require\\('crypto'\\).randomBytes\\(32\\).toString\\('hex'\\)\\)\")"
+      "Bash(node -e \"console.log\\(require\\('crypto'\\).randomBytes\\(32\\).toString\\('hex'\\)\\)\")",
+      "Bash(identify z:/programming/yehidang/public/Logo.png)",
+      "Bash(node -e \"const {execSync} = require\\('child_process'\\); console.log\\(execSync\\('magick identify public/Logo.png 2>&1 || python -c \\\\\"from PIL import Image; img=Image.open\\(\\\\\\\\\\\\\"public/Logo.png\\\\\\\\\\\\\"\\); print\\(img.size\\)\\\\\"'\\).toString\\(\\)\\)\")",
+      "Bash(python3 -c \"from PIL import Image; img=Image.open\\('z:/programming/yehidang/public/Logo.png'\\); print\\(img.size\\)\")"
     ]
   }
 }
