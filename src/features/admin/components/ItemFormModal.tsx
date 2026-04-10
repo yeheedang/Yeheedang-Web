@@ -44,7 +44,7 @@ const modalStyle = css`
   border-radius: ${RADIUS_LG};
   padding: ${SPACE_8};
   width: 100%;
-  max-width: 480px;
+  max-width: 520px;
   display: flex;
   flex-direction: column;
   gap: ${SPACE_4};
@@ -107,28 +107,67 @@ const imageUploadAreaStyle = css`
   }
 `
 
-const imagePreviewStyle = css`
-  position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  border-radius: ${RADIUS_MD};
-  overflow: hidden;
-`
-
 const imageHintStyle = css`
   font-size: 0.75rem;
   color: ${COLOR_WALNUT_LIGHT};
   text-align: center;
 `
 
-const imageRemoveBtnStyle = css`
-  font-size: 0.7rem;
-  color: #e57373;
-  background: none;
+const imageGridStyle = css`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: ${SPACE_3};
+  width: 100%;
+`
+
+const imageThumbWrapStyle = css`
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: ${RADIUS_MD};
+  overflow: hidden;
+  background: rgba(235, 203, 203, 0.15);
+`
+
+const imageThumbRemoveStyle = css`
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
   border: none;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 0.7rem;
   cursor: pointer;
-  padding: 0;
-  text-decoration: underline;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  line-height: 1;
+
+  &:hover {
+    background: rgba(200, 50, 50, 0.8);
+  }
+`
+
+const addMoreBtnStyle = css`
+  aspect-ratio: 4 / 3;
+  border: 1.5px dashed ${COLOR_YEHI_GREY};
+  border-radius: ${RADIUS_MD};
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: ${COLOR_WALNUT_LIGHT};
+  transition: border-color 0.2s, color 0.2s;
+
+  &:hover {
+    border-color: ${COLOR_WALNUT};
+    color: ${COLOR_WALNUT};
+  }
 `
 
 const uploadingStyle = css`
@@ -189,7 +228,7 @@ function generateItemId(categoryId: string): string {
 
 export function ItemFormModal({ categoryId, item, onSave, onClose }: ItemFormModalProps) {
   const [form, setForm] = useState({ name: '', nameEn: '', desc: '', price: '' })
-  const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [images, setImages] = useState<string[]>([])
   const [isUploading, setIsUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -197,7 +236,11 @@ export function ItemFormModal({ categoryId, item, onSave, onClose }: ItemFormMod
   useEffect(() => {
     if (item) {
       setForm({ name: item.name, nameEn: item.nameEn, desc: item.desc, price: item.price })
-      setImageUrl(item.image ?? null)
+      if (item.images && item.images.length > 0) {
+        setImages(item.images)
+      } else if (item.image) {
+        setImages([item.image])
+      }
     }
   }, [item])
 
@@ -207,28 +250,35 @@ export function ItemFormModal({ categoryId, item, onSave, onClose }: ItemFormMod
     setForm((prev) => ({ ...prev, [field]: e.target.value }))
   }
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+  const handleFilesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? [])
+    if (files.length === 0) return
 
     setUploadError(null)
     setIsUploading(true)
 
-    const formData = new FormData()
-    formData.append('file', file)
-
-    const res = await fetch('/api/admin/upload', { method: 'POST', body: formData })
-    const data = await res.json()
-
-    setIsUploading(false)
-
-    if (!res.ok) {
-      setUploadError(data.error ?? '업로드 실패')
-      return
+    const uploaded: string[] = []
+    for (const file of files) {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch('/api/admin/upload', { method: 'POST', body: formData })
+      const data = await res.json()
+      if (!res.ok) {
+        setUploadError(data.error ?? '업로드 실패')
+        setIsUploading(false)
+        e.target.value = ''
+        return
+      }
+      uploaded.push(data.url)
     }
 
-    setImageUrl(data.url)
+    setImages((prev) => [...prev, ...uploaded])
+    setIsUploading(false)
     e.target.value = ''
+  }
+
+  const removeImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index))
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -241,7 +291,8 @@ export function ItemFormModal({ categoryId, item, onSave, onClose }: ItemFormMod
       nameEn: form.nameEn.trim(),
       desc: form.desc.trim(),
       price: form.price.trim(),
-      image: imageUrl,
+      image: images[0] ?? null,
+      images: images.length > 0 ? images : undefined,
     })
   }
 
@@ -268,34 +319,48 @@ export function ItemFormModal({ categoryId, item, onSave, onClose }: ItemFormMod
         </div>
 
         <div css={fieldStyle}>
-          <label css={labelStyle}>이미지</label>
+          <label css={labelStyle}>이미지 (여러 장 업로드 가능)</label>
           <input
             ref={fileInputRef}
             type="file"
             accept="image/jpeg,image/png,image/webp,image/avif"
+            multiple
             style={{ display: 'none' }}
-            onChange={handleFileChange}
+            onChange={handleFilesChange}
           />
-          <div css={imageUploadAreaStyle} onClick={() => fileInputRef.current?.click()}>
-            {imageUrl ? (
-              <div css={imagePreviewStyle}>
-                <Image src={imageUrl} alt="메뉴 이미지" fill style={{ objectFit: 'cover' }} sizes="440px" />
-              </div>
-            ) : (
-              <span css={imageHintStyle}>클릭하여 이미지 업로드 (jpg, png, webp, avif · 최대 5MB)</span>
-            )}
-            {isUploading && <span css={uploadingStyle}>업로드 중...</span>}
-            {uploadError && <span css={errorStyle}>{uploadError}</span>}
-          </div>
-          {imageUrl && (
-            <button
-              css={imageRemoveBtnStyle}
-              type="button"
-              onClick={() => setImageUrl(null)}
-            >
-              이미지 제거
-            </button>
+
+          {images.length === 0 ? (
+            <div css={imageUploadAreaStyle} onClick={() => fileInputRef.current?.click()}>
+              <span css={imageHintStyle}>클릭하여 이미지 업로드 (여러 장 선택 가능 · jpg, png, webp · 최대 5MB)</span>
+            </div>
+          ) : (
+            <div css={imageGridStyle}>
+              {images.map((url, i) => (
+                <div key={url + i} css={imageThumbWrapStyle}>
+                  <Image src={url} alt={`이미지 ${i + 1}`} fill style={{ objectFit: 'cover' }} sizes="160px" />
+                  <button
+                    css={imageThumbRemoveStyle}
+                    type="button"
+                    onClick={() => removeImage(i)}
+                    aria-label={`이미지 ${i + 1} 제거`}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+              <button
+                css={addMoreBtnStyle}
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                aria-label="이미지 추가"
+              >
+                +
+              </button>
+            </div>
           )}
+
+          {isUploading && <span css={uploadingStyle}>업로드 중...</span>}
+          {uploadError && <span css={errorStyle}>{uploadError}</span>}
         </div>
 
         <div css={fieldStyle}>

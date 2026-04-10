@@ -10,6 +10,7 @@ export interface MenuItem {
   desc: string
   price: string
   image: string | null
+  images?: string[]
 }
 
 export interface MenuData {

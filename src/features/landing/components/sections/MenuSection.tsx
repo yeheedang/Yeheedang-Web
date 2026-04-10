@@ -25,6 +25,7 @@ import {
 } from '@/styles/tokens'
 import { FONT_DISPLAY, FONT_BODY, FONT_ACCENT } from '@/styles/typography'
 import type { MenuCategory, MenuItem, MenuData } from '@/features/landing/types'
+import { MenuDetailModal } from './MenuDetailModal'
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(10px); }
@@ -260,8 +261,9 @@ export function MenuSection() {
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
   const gridRef = useRef<HTMLDivElement>(null)
-  const dragState = useRef({ startX: 0, scrollLeft: 0, active: false })
+  const dragState = useRef({ startX: 0, scrollLeft: 0, active: false, moved: false })
 
   useEffect(() => {
     fetch('/api/menu')
@@ -298,17 +300,21 @@ export function MenuSection() {
   const onMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const el = gridRef.current
     if (!el) return
-    dragState.current = { startX: e.pageX - el.offsetLeft, scrollLeft: el.scrollLeft, active: true }
-    setIsDragging(true)
+    dragState.current = { startX: e.pageX - el.offsetLeft, scrollLeft: el.scrollLeft, active: true, moved: false }
   }, [])
+
+  const DRAG_THRESHOLD = 5
 
   const onMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!dragState.current.active) return
-    e.preventDefault()
     const el = gridRef.current
     if (!el) return
     const x = e.pageX - el.offsetLeft
     const walk = x - dragState.current.startX
+    if (!dragState.current.moved && Math.abs(walk) < DRAG_THRESHOLD) return
+    e.preventDefault()
+    dragState.current.moved = true
+    setIsDragging(true)
     el.scrollLeft = dragState.current.scrollLeft - walk
   }, [])
 
@@ -328,6 +334,7 @@ export function MenuSection() {
   const activeItems: MenuItem[] = menuData.items[activeCategory] ?? []
 
   return (
+    <>
     <Section>
       <Header>
         <EyebrowText>Our Menu</EyebrowText>
@@ -365,7 +372,7 @@ export function MenuSection() {
             onMouseLeave={onDragEnd}
           >
             {activeItems.map((item: MenuItem) => (
-              <MenuCard key={item.id} isDragging={isDragging}>
+              <MenuCard key={item.id} isDragging={isDragging} onClick={() => !dragState.current.moved && setSelectedItem(item)}>
                 <CardName>{item.name}</CardName>
                 <CardNameEn>{item.nameEn}</CardNameEn>
                 <CardDesc>{item.desc}</CardDesc>
@@ -391,5 +398,10 @@ export function MenuSection() {
         </CarouselArrow>
       </CarouselOuter>
     </Section>
+
+    {selectedItem && (
+      <MenuDetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />
+    )}
+    </>
   )
 }
