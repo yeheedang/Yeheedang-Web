@@ -31,7 +31,7 @@ const fadeIn = keyframes`
   to   { opacity: 1; transform: translateY(0); }
 `
 
-const CARD_HEIGHT = '420px'
+const CARD_HEIGHT = '430px'
 const SCROLL_AMOUNT = 360
 
 const Section = styled.section`
