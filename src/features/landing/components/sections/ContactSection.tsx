@@ -32,10 +32,10 @@ const Section = styled.section`
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 3fr 2fr;
   align-items: center;
   padding: ${SPACE_12} clamp(${SPACE_16}, 8vw, ${SPACE_20});
-  gap: ${SPACE_12};
+  
 
   @media (max-width: ${BREAKPOINT_TABLET}px) {
     grid-template-columns: 1fr;
@@ -48,6 +48,7 @@ const Section = styled.section`
 const InfoColumn = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: ${SPACE_6};
   animation: ${fadeIn} 600ms ease 100ms both;
 
@@ -124,9 +125,8 @@ const MapColumn = styled.div`
   border-radius: ${RADIUS_LG};
   overflow: hidden;
   border: 1px solid rgba(235, 203, 203, 0.4);
-  aspect-ratio: 1/1;
   background: ${COLOR_HANJI_WARM};
-  position: relative;
+  margin-right: ${SPACE_8};
 
   @media (max-width: ${BREAKPOINT_TABLET}px) {
     display: none;
@@ -138,11 +138,8 @@ const MapColumn = styled.div`
 `
 
 const MapImage = styled.img`
-  position: absolute;
-  inset: 0;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  height: auto;
   display: block;
 `
 

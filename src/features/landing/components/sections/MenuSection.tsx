@@ -184,6 +184,7 @@ const MenuCard = styled.div<{ isDragging: boolean }>`
   flex: 0 0 330px;
   background: rgba(255, 255, 255, 0.6);
   //border: 1px solid rgba(235, 203, 203, 0.4);
+  box-shadow: 0 5px 3px 0px #0000001f;
   border-radius: ${RADIUS_LG};
   padding: ${SPACE_6};
   display: flex;
