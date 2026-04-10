@@ -2,9 +2,9 @@
 깔끔하고 세련된 한국의 전통문화가 현대와 혼합된 느낌의 모노톤 베이스 디자인.
 
 # Color-System
-Yehi Grey - #ebcbcb (font color)
 Real White - #ffffff (Background)
-Point Color Black - wallnut (적당한 컬러코드를 사용해줘)
+Accent - #595959 (Point color: text, borders, active states)
+Yehi Grey - #ebcbcb (Sub font color)
 
 # Details
 - 배경(Background) 에 펠트지 or 한지 같은 Texture 가 들어간 느낌.

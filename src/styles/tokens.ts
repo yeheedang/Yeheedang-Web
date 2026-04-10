@@ -1,12 +1,16 @@
-// Colors
-export const COLOR_YEHI_GREY = '#595959'
-export const COLOR_WHITE = '#ffffff'
-export const COLOR_WALNUT = '#4a3728'
-export const COLOR_WALNUT_LIGHT = '#7a5c48'
-export const COLOR_WALNUT_DARK = '#2e2019'
-export const COLOR_INK = '#1a1210'
-export const COLOR_HANJI_PAPER = '#faf6f0'
-export const COLOR_HANJI_WARM = '#f5efe6'
+// Colors — Design System
+export const COLOR_REAL_WHITE = '#ffffff'   // Background
+export const COLOR_ACCENT = '#595959'       // Point color (text, borders, active states)
+export const COLOR_YEHI_GREY = '#ebcbcb'   // Sub font color
+
+// Aliases for backward compatibility
+export const COLOR_WHITE = COLOR_REAL_WHITE
+export const COLOR_WALNUT = COLOR_ACCENT
+export const COLOR_WALNUT_LIGHT = COLOR_ACCENT
+export const COLOR_WALNUT_DARK = COLOR_ACCENT
+export const COLOR_INK = COLOR_ACCENT
+export const COLOR_HANJI_PAPER = COLOR_REAL_WHITE
+export const COLOR_HANJI_WARM = COLOR_REAL_WHITE
 
 // Spacing (base-4 scale)
 export const SPACE_1 = '4px'
