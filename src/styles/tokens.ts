@@ -1,7 +1,7 @@
 // Colors — Design System
 export const COLOR_REAL_WHITE = '#ffffff'   // Background
 export const COLOR_ACCENT = '#595959'       // Point color (text, borders, active states)
-export const COLOR_YEHI_GREY = '#ebcbcb'   // Sub font color
+export const COLOR_YEHI_GREY = '#000000'   // Sub font color
 
 // Aliases for backward compatibility
 export const COLOR_WHITE = COLOR_REAL_WHITE
