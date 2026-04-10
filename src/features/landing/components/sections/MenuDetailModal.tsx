@@ -80,6 +80,21 @@ const ImageWrap = styled.div`
   }
 `
 
+const SlideTrack = styled.div<{ index: number; count: number }>`
+  display: flex;
+  width: ${({ count }) => count * 100}%;
+  height: 100%;
+  transform: translateX(${({ index, count }) => -(index * (100 / count))}%);
+  transition: transform 350ms cubic-bezier(0.4, 0, 0.2, 1);
+`
+
+const SlideItem = styled.div<{ count: number }>`
+  position: relative;
+  flex-shrink: 0;
+  width: ${({ count }) => 100 / count}%;
+  height: 100%;
+`
+
 
 const DotRow = styled.div`
   position: absolute;
@@ -279,18 +294,20 @@ export function MenuDetailModal({ item, onClose }: MenuDetailModalProps) {
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            {images[currentIndex] && (
-              <Image
-                key={images[currentIndex]}
-                src={images[currentIndex]}
-                alt={`${item.name} ${currentIndex + 1}`}
-                fill
-                style={{ objectFit: 'cover', userSelect: 'none', pointerEvents: 'none' }}
-                sizes="420px"
-                draggable={false}
-              />
-            )}
-            {images.length === 0 && null}
+            <SlideTrack index={currentIndex} count={images.length || 1}>
+              {images.map((src, i) => (
+                <SlideItem key={src} count={images.length || 1}>
+                  <Image
+                    src={src}
+                    alt={`${item.name} ${i + 1}`}
+                    fill
+                    style={{ objectFit: 'cover', userSelect: 'none', pointerEvents: 'none' }}
+                    sizes="420px"
+                    draggable={false}
+                  />
+                </SlideItem>
+              ))}
+            </SlideTrack>
           </ImageWrap>
 
           {images.length > 1 && (
