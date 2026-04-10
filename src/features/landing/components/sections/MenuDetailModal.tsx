@@ -80,29 +80,6 @@ const ImageWrap = styled.div`
   }
 `
 
-const SlideArrow = styled.button<{ side: 'left' | 'right' }>`
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  ${({ side }) => side}: ${SPACE_3};
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(0, 0, 0, 0.35);
-  color: ${COLOR_WHITE};
-  font-size: 1.1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-  transition: background 180ms ease;
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.6);
-  }
-`
 
 const DotRow = styled.div`
   position: absolute;
@@ -290,12 +267,6 @@ export function MenuDetailModal({ item, onClose }: MenuDetailModalProps) {
     handleDragEnd(e.changedTouches[0].clientX)
   }, [handleDragEnd])
 
-  const handleArrowClick = useCallback((direction: 'prev' | 'next') => {
-    if (direction === 'prev') prev()
-    else next()
-    resetAutoplay()
-  }, [prev, next, resetAutoplay])
-
   return (
     <Overlay onClick={onClose}>
       <Modal onClick={(e) => e.stopPropagation()}>
@@ -323,19 +294,11 @@ export function MenuDetailModal({ item, onClose }: MenuDetailModalProps) {
           </ImageWrap>
 
           {images.length > 1 && (
-            <>
-              <SlideArrow side="left" onClick={() => handleArrowClick('prev')} aria-label="이전 사진">
-                ‹
-              </SlideArrow>
-              <SlideArrow side="right" onClick={() => handleArrowClick('next')} aria-label="다음 사진">
-                ›
-              </SlideArrow>
-              <DotRow>
-                {images.map((_, i) => (
-                  <Dot key={i} isActive={i === currentIndex} onClick={() => { setCurrentIndex(i); resetAutoplay() }} aria-label={`사진 ${i + 1}`} />
-                ))}
-              </DotRow>
-            </>
+            <DotRow>
+              {images.map((_, i) => (
+                <Dot key={i} isActive={i === currentIndex} onClick={() => { setCurrentIndex(i); resetAutoplay() }} aria-label={`사진 ${i + 1}`} />
+              ))}
+            </DotRow>
           )}
 
           <CloseButton onClick={onClose} aria-label="닫기">
