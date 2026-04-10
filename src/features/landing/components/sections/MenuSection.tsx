@@ -183,7 +183,7 @@ const MenuGrid = styled.div<{ isDragging: boolean }>`
 const MenuCard = styled.div<{ isDragging: boolean }>`
   flex: 0 0 330px;
   background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(235, 203, 203, 0.4);
+  //border: 1px solid rgba(235, 203, 203, 0.4);
   border-radius: ${RADIUS_LG};
   padding: ${SPACE_6};
   display: flex;

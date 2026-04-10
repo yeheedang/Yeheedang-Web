@@ -11,7 +11,10 @@
       "Bash(identify z:/programming/yehidang/public/Logo.png)",
       "Bash(node -e \"const {execSync} = require\\('child_process'\\); console.log\\(execSync\\('magick identify public/Logo.png 2>&1 || python -c \\\\\"from PIL import Image; img=Image.open\\(\\\\\\\\\\\\\"public/Logo.png\\\\\\\\\\\\\"\\); print\\(img.size\\)\\\\\"'\\).toString\\(\\)\\)\")",
       "Bash(python3 -c \"from PIL import Image; img=Image.open\\('z:/programming/yehidang/public/Logo.png'\\); print\\(img.size\\)\")",
-      "Bash(npx vercel:*)"
+      "Bash(npx vercel:*)",
+      "Bash(npx next:*)",
+      "Bash(python3 -c ':*)",
+      "Bash(identify \"public/yeheedang map.jpg\")"
     ]
   }
 }

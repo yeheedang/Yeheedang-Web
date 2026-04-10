@@ -3,6 +3,21 @@
 
 import { useState } from 'react'
 import { css } from '@emotion/react'
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import type { MenuCategory, MenuItem } from '../types'
 import { ItemFormModal } from './ItemFormModal'
 import {
@@ -27,6 +42,7 @@ interface CategorySectionProps {
   onAddItem: (categoryId: string, item: MenuItem) => void
   onUpdateItem: (categoryId: string, item: MenuItem) => void
   onRemoveItem: (categoryId: string, itemId: string) => void
+  onReorderItems: (categoryId: string, items: MenuItem[]) => void
 }
 
 const sectionStyle = css`
@@ -91,16 +107,51 @@ const itemListStyle = css`
   flex-direction: column;
 `
 
-const itemRowStyle = css`
+const itemRowStyle = (isDragging: boolean) => css`
   display: flex;
   align-items: center;
   padding: ${SPACE_3} ${SPACE_6};
   border-bottom: 1px solid #f5eded;
   gap: ${SPACE_4};
+  background: ${isDragging ? '#fdf9f7' : COLOR_WHITE};
+  box-shadow: ${isDragging ? '0 4px 16px rgba(74,55,40,0.12)' : 'none'};
+  border-radius: ${isDragging ? RADIUS_MD : '0'};
+  opacity: ${isDragging ? 0.9 : 1};
+  transition: box-shadow 0.15s;
 
   &:last-child {
     border-bottom: none;
   }
+`
+
+const dragHandleStyle = css`
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: ${SPACE_2};
+  cursor: grab;
+  opacity: 0.35;
+  flex-shrink: 0;
+
+  &:hover {
+    opacity: 0.7;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+`
+
+const dragDotRowStyle = css`
+  display: flex;
+  gap: 3px;
+`
+
+const dragDotStyle = css`
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: ${COLOR_WALNUT};
 `
 
 const itemInfoStyle = css`
@@ -155,6 +206,66 @@ const emptyStyle = css`
   color: ${COLOR_YEHI_GREY};
 `
 
+function DragHandle() {
+  return (
+    <div css={dragHandleStyle}>
+      <div css={dragDotRowStyle}>
+        <div css={dragDotStyle} />
+        <div css={dragDotStyle} />
+      </div>
+      <div css={dragDotRowStyle}>
+        <div css={dragDotStyle} />
+        <div css={dragDotStyle} />
+      </div>
+      <div css={dragDotRowStyle}>
+        <div css={dragDotStyle} />
+        <div css={dragDotStyle} />
+      </div>
+    </div>
+  )
+}
+
+interface SortableItemRowProps {
+  item: MenuItem
+  onEdit: (item: MenuItem) => void
+  onRemove: (itemId: string) => void
+  categoryId: string
+}
+
+function SortableItemRow({ item, onEdit, onRemove }: SortableItemRowProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+
+  return (
+    <div ref={setNodeRef} style={style} css={itemRowStyle(isDragging)}>
+      <div {...attributes} {...listeners}>
+        <DragHandle />
+      </div>
+      <div css={itemInfoStyle}>
+        <span css={itemNameStyle}>{item.name}</span>
+        <span css={itemSubStyle}>{item.nameEn}</span>
+        {item.desc && <span css={itemSubStyle}>{item.desc}</span>}
+      </div>
+      <span css={itemPriceStyle}>₩{Number(item.price).toLocaleString()}</span>
+      <div css={itemActionsStyle}>
+        <button css={iconBtnStyle()} onClick={() => onEdit(item)}>수정</button>
+        <button css={iconBtnStyle(true)} onClick={() => onRemove(item.id)}>삭제</button>
+      </div>
+    </div>
+  )
+}
+
 export function CategorySection({
   category,
   items,
@@ -162,9 +273,14 @@ export function CategorySection({
   onAddItem,
   onUpdateItem,
   onRemoveItem,
+  onReorderItems,
 }: CategorySectionProps) {
   const [modalOpen, setModalOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } })
+  )
 
   const handleOpenAdd = () => {
     setEditingItem(null)
@@ -192,6 +308,15 @@ export function CategorySection({
     }
   }
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+
+    const oldIndex = items.findIndex((i) => i.id === active.id)
+    const newIndex = items.findIndex((i) => i.id === over.id)
+    onReorderItems(category.id, arrayMove(items, oldIndex, newIndex))
+  }
+
   return (
     <>
       <section css={sectionStyle}>
@@ -207,20 +332,23 @@ export function CategorySection({
           {items.length === 0 ? (
             <p css={emptyStyle}>메뉴가 없습니다.</p>
           ) : (
-            items.map((item) => (
-              <div key={item.id} css={itemRowStyle}>
-                <div css={itemInfoStyle}>
-                  <span css={itemNameStyle}>{item.name}</span>
-                  <span css={itemSubStyle}>{item.nameEn}</span>
-                  {item.desc && <span css={itemSubStyle}>{item.desc}</span>}
-                </div>
-                <span css={itemPriceStyle}>₩{Number(item.price).toLocaleString()}</span>
-                <div css={itemActionsStyle}>
-                  <button css={iconBtnStyle()} onClick={() => handleOpenEdit(item)}>수정</button>
-                  <button css={iconBtnStyle(true)} onClick={() => onRemoveItem(category.id, item.id)}>삭제</button>
-                </div>
-              </div>
-            ))
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+                {items.map((item) => (
+                  <SortableItemRow
+                    key={item.id}
+                    item={item}
+                    categoryId={category.id}
+                    onEdit={handleOpenEdit}
+                    onRemove={(itemId) => onRemoveItem(category.id, itemId)}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
           )}
         </div>
       </section>

@@ -10,7 +10,6 @@ import {
   COLOR_HANJI_WARM,
   SPACE_2,
   SPACE_3,
-  SPACE_4,
   SPACE_6,
   SPACE_8,
   SPACE_10,
@@ -125,11 +124,9 @@ const MapColumn = styled.div`
   border-radius: ${RADIUS_LG};
   overflow: hidden;
   border: 1px solid rgba(235, 203, 203, 0.4);
-  aspect-ratio: 4/3;
+  aspect-ratio: 1/1;
   background: ${COLOR_HANJI_WARM};
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
 
   @media (max-width: ${BREAKPOINT_TABLET}px) {
     display: none;
@@ -140,21 +137,13 @@ const MapColumn = styled.div`
   }
 `
 
-const MapPlaceholder = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${SPACE_4};
-  font-family: ${FONT_BODY};
-  font-size: 0.8rem;
-  color: ${COLOR_WALNUT_LIGHT};
-  text-align: center;
-  padding: ${SPACE_8};
-`
-
-const MapIcon = styled.div`
-  font-size: 2rem;
-  opacity: 0.5;
+const MapImage = styled.img`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 `
 
 export function ContactSection() {
@@ -168,7 +157,7 @@ export function ContactSection() {
           <InfoGroup>
             <InfoLabel>주소</InfoLabel>
             <InfoValue>
-              서울특별시 강북구 미아동 오폐산로 37길 22 1층 
+              서울특별시 강북구 미아동 오폐산로 37길 22 1층
             </InfoValue>
           </InfoGroup>
 
@@ -200,11 +189,7 @@ export function ContactSection() {
       </InfoColumn>
 
       <MapColumn>
-        <MapPlaceholder>
-          <MapIcon>◎</MapIcon>
-          <span>지도는 준비 중입니다</span>
-          <span style={{ fontSize: '0.7rem', opacity: 0.7 }}>서울시 강북구 미아동</span>
-        </MapPlaceholder>
+        <MapImage src="/yeheedang map.jpg" alt="예히당 지도" />
       </MapColumn>
     </Section>
   )

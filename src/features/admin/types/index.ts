@@ -16,3 +16,14 @@ export interface MenuData {
   categories: MenuCategory[]
   items: Record<string, MenuItem[]>
 }
+
+export interface GalleryImage {
+  id: string
+  src: string
+  alt: string
+  caption?: string
+}
+
+export interface GalleryData {
+  images: GalleryImage[]
+}

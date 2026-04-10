@@ -20,6 +20,7 @@ const nanumMyeongjo = Nanum_Myeongjo({
 export const metadata: Metadata = {
   title: '예히당 | 한국 전통 디저트 카페',
   description: '한국의 전통과 현대가 어우러진 디저트 카페, 예히당',
+  icons: '/favico.png',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

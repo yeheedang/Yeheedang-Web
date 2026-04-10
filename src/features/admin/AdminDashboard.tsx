@@ -6,8 +6,10 @@ import { css } from '@emotion/react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import { useMenuAdmin } from './hooks/useMenuAdmin'
+import { useGalleryAdmin } from './hooks/useGalleryAdmin'
 import { CategorySection } from './components/CategorySection'
 import { AddCategoryModal } from './components/AddCategoryModal'
+import { GalleryAdminSection } from './components/GalleryAdminSection'
 import {
   COLOR_WALNUT,
   COLOR_WALNUT_DARK,
@@ -19,11 +21,13 @@ import {
   SPACE_4,
   SPACE_6,
   SPACE_8,
-  SPACE_12,
   SPACE_16,
   RADIUS_MD,
   RADIUS_LG,
+  RADIUS_PILL,
 } from '@/styles/tokens'
+
+type AdminTab = 'menu' | 'gallery'
 
 const pageStyle = css`
   min-height: 100vh;
@@ -52,29 +56,14 @@ const topBarActionsStyle = css`
   align-items: center;
 `
 
-const saveStatusStyle = (hasChanges: boolean) => css`
+const saveStatusStyle = css`
   font-size: 0.75rem;
-  color: ${hasChanges ? COLOR_YEHI_GREY : '#a0c0a0'};
+  color: #a0c0a0;
 `
 
-const saveBtnStyle = css`
-  padding: ${SPACE_2} ${SPACE_6};
-  background: ${COLOR_WALNUT};
-  color: ${COLOR_WHITE};
-  border: none;
-  border-radius: ${RADIUS_MD};
+const savingStatusStyle = css`
   font-size: 0.75rem;
-  cursor: pointer;
-  transition: background 0.2s;
-
-  &:hover:not(:disabled) {
-    background: #3a2818;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+  color: ${COLOR_YEHI_GREY};
 `
 
 const logoutBtnStyle = css`
@@ -153,95 +142,156 @@ const loadingStyle = css`
   font-size: 0.875rem;
 `
 
+const tabBarStyle = css`
+  display: flex;
+  gap: ${SPACE_2};
+  border-bottom: 1px solid ${COLOR_YEHI_GREY};
+  padding-bottom: ${SPACE_4};
+`
+
+const tabBtnStyle = (isActive: boolean) => css`
+  padding: ${SPACE_2} ${SPACE_6};
+  border-radius: ${RADIUS_PILL};
+  border: 1px solid ${isActive ? COLOR_WALNUT : 'transparent'};
+  background: ${isActive ? COLOR_WALNUT : 'transparent'};
+  color: ${isActive ? COLOR_WHITE : COLOR_WALNUT_LIGHT};
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: ${COLOR_WALNUT};
+    color: ${isActive ? COLOR_WHITE : COLOR_WALNUT};
+  }
+`
+
 export function AdminDashboard() {
   const router = useRouter()
+  const [activeTab, setActiveTab] = useState<AdminTab>('menu')
+
   const {
     menuData,
-    loading,
-    saving,
-    error,
+    loading: menuLoading,
+    saving: menuSaving,
+    savedAt: menuSavedAt,
+    error: menuError,
     fetchMenu,
-    saveMenu,
     addCategory,
     removeCategory,
     addItem,
     updateItem,
     removeItem,
+    reorderItems,
   } = useMenuAdmin()
 
+  const {
+    galleryData,
+    loading: galleryLoading,
+    saving: gallerySaving,
+    savedAt: gallerySavedAt,
+    error: galleryError,
+    fetchGallery,
+    addImage,
+    updateImage,
+    removeImage,
+    reorderImages,
+  } = useGalleryAdmin()
+
+  const loading = activeTab === 'menu' ? menuLoading : galleryLoading
+  const saving = activeTab === 'menu' ? menuSaving : gallerySaving
+  const savedAt = activeTab === 'menu' ? menuSavedAt : gallerySavedAt
+  const error = activeTab === 'menu' ? menuError : galleryError
+
   const [addCategoryOpen, setAddCategoryOpen] = useState(false)
-  const [savedAt, setSavedAt] = useState<Date | null>(null)
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
   useEffect(() => {
     fetchMenu()
-  }, [fetchMenu])
-
-  const handleSave = async () => {
-    if (!menuData) return
-    const ok = await saveMenu(menuData)
-    if (ok) {
-      setSavedAt(new Date())
-      setHasUnsavedChanges(false)
-    }
-  }
+    fetchGallery()
+  }, [fetchMenu, fetchGallery])
 
   const handleLogout = async () => {
     await axios.delete('/api/admin/auth')
     router.push('/manage/login')
   }
 
-  const markChanged = () => setHasUnsavedChanges(true)
-
   return (
     <div css={pageStyle}>
       <div css={topBarStyle}>
         <span css={topBarTitleStyle}>예히당 관리자</span>
         <div css={topBarActionsStyle}>
-          {hasUnsavedChanges && (
-            <span css={saveStatusStyle(true)}>저장되지 않은 변경사항</span>
-          )}
-          {savedAt && !hasUnsavedChanges && (
-            <span css={saveStatusStyle(false)}>
+          {saving && <span css={savingStatusStyle}>저장 중...</span>}
+          {!saving && savedAt && (
+            <span css={saveStatusStyle}>
               저장됨 {savedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
             </span>
           )}
-          <button css={saveBtnStyle} onClick={handleSave} disabled={saving || !hasUnsavedChanges}>
-            {saving ? '저장 중...' : '저장'}
-          </button>
           <button css={logoutBtnStyle} onClick={handleLogout}>로그아웃</button>
         </div>
       </div>
 
       <main css={mainStyle}>
-        <div css={pageHeadStyle}>
-          <h1 css={pageTitleStyle}>메뉴 관리</h1>
-          <button css={addCategoryBtnStyle} onClick={() => setAddCategoryOpen(true)}>
-            + 카테고리 추가
+        <div css={tabBarStyle}>
+          <button css={tabBtnStyle(activeTab === 'menu')} onClick={() => setActiveTab('menu')}>
+            메뉴 관리
+          </button>
+          <button css={tabBtnStyle(activeTab === 'gallery')} onClick={() => setActiveTab('gallery')}>
+            갤러리 관리
           </button>
         </div>
 
-        {error && <p css={errorBannerStyle}>{error}</p>}
+        {activeTab === 'menu' && (
+          <>
+            <div css={pageHeadStyle}>
+              <h1 css={pageTitleStyle}>메뉴 관리</h1>
+              <button css={addCategoryBtnStyle} onClick={() => setAddCategoryOpen(true)}>
+                + 카테고리 추가
+              </button>
+            </div>
 
-        {loading && <p css={loadingStyle}>불러오는 중...</p>}
+            {error && <p css={errorBannerStyle}>{error}</p>}
+            {loading && <p css={loadingStyle}>불러오는 중...</p>}
 
-        {menuData?.categories.map((category) => (
-          <CategorySection
-            key={category.id}
-            category={category}
-            items={menuData.items[category.id] ?? []}
-            onRemoveCategory={(id) => { removeCategory(id); markChanged() }}
-            onAddItem={(cid, item) => { addItem(cid, item); markChanged() }}
-            onUpdateItem={(cid, item) => { updateItem(cid, item); markChanged() }}
-            onRemoveItem={(cid, itemId) => { removeItem(cid, itemId); markChanged() }}
-          />
-        ))}
+            {menuData?.categories.map((category) => (
+              <CategorySection
+                key={category.id}
+                category={category}
+                items={menuData.items[category.id] ?? []}
+                onRemoveCategory={removeCategory}
+                onAddItem={addItem}
+                onUpdateItem={updateItem}
+                onRemoveItem={removeItem}
+                onReorderItems={reorderItems}
+              />
+            ))}
+          </>
+        )}
+
+        {activeTab === 'gallery' && (
+          <>
+            <div css={pageHeadStyle}>
+              <h1 css={pageTitleStyle}>갤러리 관리</h1>
+            </div>
+
+            {error && <p css={errorBannerStyle}>{error}</p>}
+            {loading && <p css={loadingStyle}>불러오는 중...</p>}
+
+            {!loading && (
+              <GalleryAdminSection
+                images={galleryData?.images ?? []}
+                onAdd={addImage}
+                onUpdate={updateImage}
+                onRemove={removeImage}
+                onReorder={reorderImages}
+              />
+            )}
+          </>
+        )}
       </main>
 
       {addCategoryOpen && (
         <AddCategoryModal
           existingIds={menuData?.categories.map((c) => c.id) ?? []}
-          onAdd={(cat) => { addCategory(cat); markChanged() }}
+          onAdd={addCategory}
           onClose={() => setAddCategoryOpen(false)}
         />
       )}

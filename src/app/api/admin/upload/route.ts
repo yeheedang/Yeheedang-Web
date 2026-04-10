@@ -35,8 +35,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: '파일 크기는 5MB 이하여야 합니다.' }, { status: 400 })
   }
 
+  const folder = (formData.get('folder') as string | null) ?? 'menu'
+  const allowedFolders = ['menu', 'gallery']
+  const safeFolder = allowedFolders.includes(folder) ? folder : 'menu'
+
   const ext = file.name.split('.').pop() ?? 'jpg'
-  const filename = `menu/${Date.now()}.${ext}`
+  const filename = `${safeFolder}/${Date.now()}.${ext}`
 
   const blob = await put(filename, file, {
     access: 'public',
