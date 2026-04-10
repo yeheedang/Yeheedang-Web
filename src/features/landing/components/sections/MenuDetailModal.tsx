@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import Image from 'next/image'
 import styled from '@emotion/styled'
 import { keyframes } from '@emotion/react'
@@ -73,6 +73,11 @@ const ImageWrap = styled.div`
   aspect-ratio: 4 / 3;
   background: rgba(235, 203, 203, 0.15);
   overflow: hidden;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
 `
 
 const SlideArrow = styled.button<{ side: 'left' | 'right' }>`
@@ -200,23 +205,19 @@ interface MenuDetailModalProps {
   onClose: () => void
 }
 
+const AUTOPLAY_INTERVAL = 4000
+const DRAG_THRESHOLD = 50
+
 export function MenuDetailModal({ item, onClose }: MenuDetailModalProps) {
   const images = resolveImages(item)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const dragStartX = useRef<number | null>(null)
+  const isDragging = useRef(false)
 
   useEffect(() => {
     setCurrentIndex(0)
   }, [item.id])
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-      if (e.key === 'ArrowLeft') prev()
-      if (e.key === 'ArrowRight') next()
-    }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [onClose, images.length])
 
   const prev = useCallback(() => {
     setCurrentIndex((i) => (i - 1 + images.length) % images.length)
@@ -226,19 +227,96 @@ export function MenuDetailModal({ item, onClose }: MenuDetailModalProps) {
     setCurrentIndex((i) => (i + 1) % images.length)
   }, [images.length])
 
+  const resetAutoplay = useCallback(() => {
+    if (autoplayRef.current) clearInterval(autoplayRef.current)
+    if (images.length > 1) {
+      autoplayRef.current = setInterval(next, AUTOPLAY_INTERVAL)
+    }
+  }, [images.length, next])
+
+  useEffect(() => {
+    resetAutoplay()
+    return () => {
+      if (autoplayRef.current) clearInterval(autoplayRef.current)
+    }
+  }, [resetAutoplay])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowLeft') { prev(); resetAutoplay() }
+      if (e.key === 'ArrowRight') { next(); resetAutoplay() }
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [onClose, prev, next, resetAutoplay])
+
+  const handleDragStart = useCallback((clientX: number) => {
+    dragStartX.current = clientX
+    isDragging.current = false
+  }, [])
+
+  const handleDragEnd = useCallback((clientX: number) => {
+    if (dragStartX.current === null) return
+    const delta = dragStartX.current - clientX
+    if (Math.abs(delta) >= DRAG_THRESHOLD) {
+      if (delta > 0) next()
+      else prev()
+      resetAutoplay()
+    }
+    dragStartX.current = null
+    isDragging.current = false
+  }, [prev, next, resetAutoplay])
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    handleDragStart(e.clientX)
+  }, [handleDragStart])
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (dragStartX.current !== null) {
+      if (Math.abs(e.clientX - dragStartX.current) > 5) isDragging.current = true
+    }
+  }, [])
+
+  const handleMouseUp = useCallback((e: React.MouseEvent) => {
+    handleDragEnd(e.clientX)
+  }, [handleDragEnd])
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    handleDragStart(e.touches[0].clientX)
+  }, [handleDragStart])
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    handleDragEnd(e.changedTouches[0].clientX)
+  }, [handleDragEnd])
+
+  const handleArrowClick = useCallback((direction: 'prev' | 'next') => {
+    if (direction === 'prev') prev()
+    else next()
+    resetAutoplay()
+  }, [prev, next, resetAutoplay])
+
   return (
     <Overlay onClick={onClose}>
       <Modal onClick={(e) => e.stopPropagation()}>
         <ImageContainer>
-          <ImageWrap>
+          <ImageWrap
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={() => { dragStartX.current = null }}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
             {images[currentIndex] && (
               <Image
                 key={images[currentIndex]}
                 src={images[currentIndex]}
                 alt={`${item.name} ${currentIndex + 1}`}
                 fill
-                style={{ objectFit: 'cover' }}
+                style={{ objectFit: 'cover', userSelect: 'none', pointerEvents: 'none' }}
                 sizes="420px"
+                draggable={false}
               />
             )}
             {images.length === 0 && null}
@@ -246,15 +324,15 @@ export function MenuDetailModal({ item, onClose }: MenuDetailModalProps) {
 
           {images.length > 1 && (
             <>
-              <SlideArrow side="left" onClick={prev} aria-label="이전 사진">
+              <SlideArrow side="left" onClick={() => handleArrowClick('prev')} aria-label="이전 사진">
                 ‹
               </SlideArrow>
-              <SlideArrow side="right" onClick={next} aria-label="다음 사진">
+              <SlideArrow side="right" onClick={() => handleArrowClick('next')} aria-label="다음 사진">
                 ›
               </SlideArrow>
               <DotRow>
                 {images.map((_, i) => (
-                  <Dot key={i} isActive={i === currentIndex} onClick={() => setCurrentIndex(i)} aria-label={`사진 ${i + 1}`} />
+                  <Dot key={i} isActive={i === currentIndex} onClick={() => { setCurrentIndex(i); resetAutoplay() }} aria-label={`사진 ${i + 1}`} />
                 ))}
               </DotRow>
             </>
