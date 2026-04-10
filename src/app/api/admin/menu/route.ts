@@ -53,11 +53,17 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: '올바르지 않은 데이터 형식입니다.' }, { status: 400 })
   }
 
-  await put(MENU_BLOB_KEY, JSON.stringify(body), {
-    access: 'public',
-    contentType: 'application/json',
-    addRandomSuffix: false,
-  })
+  try {
+    await put(MENU_BLOB_KEY, JSON.stringify(body), {
+      access: 'public',
+      contentType: 'application/json',
+      addRandomSuffix: false,
+      allowOverwrite: true,
+    })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ error: `Blob 저장 실패: ${message}` }, { status: 500 })
+  }
 
   return NextResponse.json({ ok: true })
 }
