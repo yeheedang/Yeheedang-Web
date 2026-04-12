@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { css } from '@emotion/react'
 import type { MenuItem } from '../types'
+import { ImageCropper } from './ImageCropper'
 import {
   COLOR_WALNUT,
   COLOR_WALNUT_DARK,
@@ -231,6 +232,7 @@ export function ItemFormModal({ categoryId, item, onSave, onClose }: ItemFormMod
   const [images, setImages] = useState<string[]>([])
   const [isUploading, setIsUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
+  const [cropQueue, setCropQueue] = useState<{ src: string; name: string }[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -250,31 +252,43 @@ export function ItemFormModal({ categoryId, item, onSave, onClose }: ItemFormMod
     setForm((prev) => ({ ...prev, [field]: e.target.value }))
   }
 
-  const handleFilesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? [])
     if (files.length === 0) return
+    const queue = files.map((f) => ({
+      src: URL.createObjectURL(f),
+      name: f.name.replace(/\.[^.]+$/, ''),
+    }))
+    setCropQueue(queue)
+    e.target.value = ''
+  }
+
+  const handleCropComplete = async (blob: Blob) => {
+    const current = cropQueue[0]
+    if (current) URL.revokeObjectURL(current.src)
+    setCropQueue((prev) => prev.slice(1))
 
     setUploadError(null)
     setIsUploading(true)
 
-    const uploaded: string[] = []
-    for (const file of files) {
-      const formData = new FormData()
-      formData.append('file', file)
-      const res = await fetch('/api/admin/upload', { method: 'POST', body: formData })
-      const data = await res.json()
-      if (!res.ok) {
-        setUploadError(data.error ?? '업로드 실패')
-        setIsUploading(false)
-        e.target.value = ''
-        return
-      }
-      uploaded.push(data.url)
+    const formData = new FormData()
+    formData.append('file', blob, `${current?.name ?? 'image'}.jpg`)
+    const res = await fetch('/api/admin/upload', { method: 'POST', body: formData })
+    const data = await res.json()
+
+    setIsUploading(false)
+
+    if (!res.ok) {
+      setUploadError(data.error ?? '업로드 실패')
+      return
     }
 
-    setImages((prev) => [...prev, ...uploaded])
-    setIsUploading(false)
-    e.target.value = ''
+    setImages((prev) => [...prev, data.url])
+  }
+
+  const handleCropCancel = () => {
+    cropQueue.forEach((item) => URL.revokeObjectURL(item.src))
+    setCropQueue([])
   }
 
   const removeImage = (index: number) => {
@@ -299,6 +313,14 @@ export function ItemFormModal({ categoryId, item, onSave, onClose }: ItemFormMod
   const isValid = form.name.trim() && form.price.trim() && !isUploading
 
   return (
+    <>
+    {cropQueue.length > 0 && (
+      <ImageCropper
+        imageSrc={cropQueue[0].src}
+        onCropComplete={handleCropComplete}
+        onCancel={handleCropCancel}
+      />
+    )}
     <div css={overlayStyle} onClick={onClose}>
       <form css={modalStyle} onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit}>
         <h2 css={modalTitleStyle}>{item ? '메뉴 수정' : '메뉴 추가'}</h2>
@@ -374,5 +396,6 @@ export function ItemFormModal({ categoryId, item, onSave, onClose }: ItemFormMod
         </div>
       </form>
     </div>
+    </>
   )
 }

@@ -5,6 +5,7 @@ import { useRef, useState } from 'react'
 import Image from 'next/image'
 import { css } from '@emotion/react'
 import type { GalleryImage } from '../types'
+import { ImageCropper } from './ImageCropper'
 import {
   COLOR_WALNUT,
   COLOR_WALNUT_DARK,
@@ -318,17 +319,28 @@ function ImageModal({ image, onSave, onClose }: ImageModalProps) {
   const [caption, setCaption] = useState(image?.caption ?? '')
   const [isUploading, setIsUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
+  const [cropSrc, setCropSrc] = useState<string | null>(null)
+  const [pendingFileName, setPendingFileName] = useState<string>('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+    setPendingFileName(file.name.replace(/\.[^.]+$/, ''))
+    const objectUrl = URL.createObjectURL(file)
+    setCropSrc(objectUrl)
+    e.target.value = ''
+  }
+
+  const handleCropComplete = async (blob: Blob) => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc)
+    setCropSrc(null)
 
     setUploadError(null)
     setIsUploading(true)
 
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append('file', blob, `${pendingFileName}.jpg`)
     formData.append('folder', 'gallery')
 
     const res = await fetch('/api/admin/upload', { method: 'POST', body: formData })
@@ -342,8 +354,12 @@ function ImageModal({ image, onSave, onClose }: ImageModalProps) {
     }
 
     setSrc(data.url)
-    if (!alt) setAlt(file.name.replace(/\.[^.]+$/, ''))
-    e.target.value = ''
+    if (!alt) setAlt(pendingFileName)
+  }
+
+  const handleCropCancel = () => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc)
+    setCropSrc(null)
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -361,6 +377,14 @@ function ImageModal({ image, onSave, onClose }: ImageModalProps) {
   const isValid = src.trim() && alt.trim() && !isUploading
 
   return (
+    <>
+    {cropSrc && (
+      <ImageCropper
+        imageSrc={cropSrc}
+        onCropComplete={handleCropComplete}
+        onCancel={handleCropCancel}
+      />
+    )}
     <div css={overlayStyle} onClick={onClose}>
       <form css={modalStyle} onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit}>
         <h2 css={modalTitleStyle}>{image ? '이미지 수정' : '이미지 추가'}</h2>
@@ -418,6 +442,7 @@ function ImageModal({ image, onSave, onClose }: ImageModalProps) {
         </div>
       </form>
     </div>
+    </>
   )
 }
 

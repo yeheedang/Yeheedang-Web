@@ -14,7 +14,9 @@
       "Bash(npx vercel:*)",
       "Bash(npx next:*)",
       "Bash(python3 -c ':*)",
-      "Bash(identify \"public/yeheedang map.jpg\")"
+      "Bash(identify \"public/yeheedang map.jpg\")",
+      "Bash(npm list:*)",
+      "Bash(echo \"EXIT: $?\")"
     ]
   }
 }
