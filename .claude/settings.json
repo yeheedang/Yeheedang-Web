@@ -17,7 +17,9 @@
       "Bash(identify \"public/yeheedang map.jpg\")",
       "Bash(npm list:*)",
       "Bash(echo \"EXIT: $?\")",
-      "Bash(npx next-sitemap:*)"
+      "Bash(npx next-sitemap:*)",
+      "WebFetch(domain:yehidang.com)",
+      "WebFetch(domain:yeheedang.com)"
     ]
   }
 }
