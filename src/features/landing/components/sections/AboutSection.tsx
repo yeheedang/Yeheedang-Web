@@ -1,5 +1,5 @@
 'use client'
-
+//1
 import Image from 'next/image'
 import styled from '@emotion/styled'
 import { keyframes } from '@emotion/react'
