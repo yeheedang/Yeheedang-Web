@@ -16,7 +16,8 @@
       "Bash(python3 -c ':*)",
       "Bash(identify \"public/yeheedang map.jpg\")",
       "Bash(npm list:*)",
-      "Bash(echo \"EXIT: $?\")"
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(npx next-sitemap:*)"
     ]
   }
 }
