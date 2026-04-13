@@ -10,5 +10,6 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: 'https://yehidang.com/sitemap.xml',
+    host: 'https://yehidang.com',
   }
 }
