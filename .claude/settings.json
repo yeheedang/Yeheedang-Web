@@ -19,7 +19,8 @@
       "Bash(echo \"EXIT: $?\")",
       "Bash(npx next-sitemap:*)",
       "WebFetch(domain:yehidang.com)",
-      "WebFetch(domain:yeheedang.com)"
+      "WebFetch(domain:yeheedang.com)",
+      "WebFetch(domain:www.yehidang.com)"
     ]
   }
 }

@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/manage/', '/api/'],
       },
     ],
-    sitemap: 'https://www.yehidang.com/sitemap.xml',
-    host: 'https://www.yehidang.com',
+    sitemap: 'https://www.yeheedang.com/sitemap.xml',
+    host: 'https://www.yeheedang.com',
   }
 }
