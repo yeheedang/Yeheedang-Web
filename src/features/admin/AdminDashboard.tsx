@@ -7,9 +7,11 @@ import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import { useMenuAdmin } from './hooks/useMenuAdmin'
 import { useGalleryAdmin } from './hooks/useGalleryAdmin'
+import { useSessionTimer } from './hooks/useSessionTimer'
 import { CategorySection } from './components/CategorySection'
 import { AddCategoryModal } from './components/AddCategoryModal'
 import { GalleryAdminSection } from './components/GalleryAdminSection'
+import { SessionTimer } from './components/SessionTimer'
 import {
   COLOR_WALNUT,
   COLOR_WALNUT_DARK,
@@ -168,6 +170,7 @@ const tabBtnStyle = (isActive: boolean) => css`
 export function AdminDashboard() {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<AdminTab>('menu')
+  const { remainingSec, isWarning, isExtending, extendSession } = useSessionTimer()
 
   const {
     menuData,
@@ -225,6 +228,12 @@ export function AdminDashboard() {
               저장됨 {savedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
             </span>
           )}
+          <SessionTimer
+            remainingSec={remainingSec}
+            isWarning={isWarning}
+            isExtending={isExtending}
+            onExtend={extendSession}
+          />
           <button css={logoutBtnStyle} onClick={handleLogout}>로그아웃</button>
         </div>
       </div>

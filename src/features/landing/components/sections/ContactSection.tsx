@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import {
@@ -151,9 +152,9 @@ const MapColumn = styled.div`
     }
 `;
 
-const MapImage = styled.img`
-    width: 100%;
-    height: auto;
+const MapImage = styled(Image)`
+    width: 100% !important;
+    height: auto !important;
     display: block;
 `;
 
@@ -209,7 +210,7 @@ export function ContactSection() {
             </InfoColumn>
 
             <MapColumn>
-                <MapImage src="/yeheedang map.jpg" alt="예히당 지도" />
+                <MapImage src="/yeheedang map.jpg" alt="예히당 오시는 길 지도" width={600} height={450} />
             </MapColumn>
         </Section>
     );

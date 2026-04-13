@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import styled from '@emotion/styled'
 import { keyframes } from '@emotion/react'
 import {
@@ -60,9 +61,9 @@ const EyebrowText = styled.span`
   }
 `
 
-const LogoImage = styled.img`
-  height: clamp(4rem, 10vw, 8rem);
-  width: auto;
+const LogoImage = styled(Image)`
+  height: clamp(4rem, 10vw, 8rem) !important;
+  width: auto !important;
   margin: 0 0 ${SPACE_16} 0;
   animation: ${fadeUp} 700ms ease 200ms both;
 
@@ -179,7 +180,7 @@ export function HeroSection() {
 
   return (
     <Section>
-      <LogoImage src="/Logo.png" alt="예히당" />
+      <LogoImage src="/Logo.png" alt="예히당 로고" width={200} height={128} priority />
       <EyebrowText>한국의 멋을 살린 수제 화과자 & 답례품</EyebrowText>
       <Divider />
       <Tagline>

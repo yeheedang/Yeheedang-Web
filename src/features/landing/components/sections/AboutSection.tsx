@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import styled from '@emotion/styled'
 import { keyframes } from '@emotion/react'
 import {
@@ -191,13 +192,13 @@ const DecoFrame = styled.div`
   }
 `
 
-const DecoCharacter = styled.img`
-  position: absolute;
-  inset: 0;
-  width: 70%;
-  height: auto;
-  margin: auto;
-  object-fit: contain;
+const DecoCharacter = styled(Image)`
+  position: absolute !important;
+  inset: 0 !important;
+  width: 70% !important;
+  height: auto !important;
+  margin: auto !important;
+  object-fit: contain !important;
   opacity: 0.15;
   user-select: none;
 `
@@ -248,7 +249,7 @@ export function AboutSection() {
 
       <DecoColumn>
         <DecoFrame>
-          <DecoCharacter src="/Logo.png" alt="예히당" />
+          <DecoCharacter src="/Logo.png" alt="" width={224} height={224} aria-hidden="true" />
           <DecoSubText>Since 2020</DecoSubText>
         </DecoFrame>
       </DecoColumn>

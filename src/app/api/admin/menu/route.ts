@@ -2,15 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { head, put } from '@vercel/blob'
 import { readFile } from 'fs/promises'
 import path from 'path'
+import { isAuthenticated } from '@/lib/adminAuth'
 
 const MENU_BLOB_KEY = 'data/menu.json'
-const ADMIN_COOKIE_NAME = 'yehi_admin_session'
-
-function isAuthenticated(request: NextRequest): boolean {
-  const sessionCookie = request.cookies.get(ADMIN_COOKIE_NAME)
-  const expectedSession = process.env.ADMIN_SESSION_SECRET
-  return !!expectedSession && sessionCookie?.value === expectedSession
-}
 
 async function fetchMenuFromBlob(): Promise<object | null> {
   try {
@@ -62,7 +56,8 @@ export async function PUT(request: NextRequest) {
     })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
-    return NextResponse.json({ error: `Blob 저장 실패: ${message}` }, { status: 500 })
+    console.error('Menu Blob 저장 실패:', message)
+    return NextResponse.json({ error: 'Blob 저장에 실패했습니다.' }, { status: 500 })
   }
 
   return NextResponse.json({ ok: true })
