@@ -13,22 +13,14 @@ export function middleware(request: NextRequest) {
   }
 
   // 로그인 페이지 자체는 통과
-  if (pathname === LOGIN_PATH) {
+  if (pathname.startsWith(LOGIN_PATH)) {
     return NextResponse.next()
   }
 
-  // 세션 쿠키 검증
+  // 쿠키 존재 여부만 확인 (세션 유효성은 서버 컴포넌트 레이아웃에서 검증)
   const sessionCookie = request.cookies.get(ADMIN_COOKIE_NAME)
   if (!sessionCookie?.value) {
     return NextResponse.redirect(new URL(LOGIN_PATH, request.url))
-  }
-
-  // 쿠키 값이 환경변수 세션 시크릿과 일치하는지 확인
-  const expectedSession = process.env.ADMIN_SESSION_SECRET
-  if (!expectedSession || sessionCookie.value !== expectedSession) {
-    const response = NextResponse.redirect(new URL(LOGIN_PATH, request.url))
-    response.cookies.delete(ADMIN_COOKIE_NAME)
-    return response
   }
 
   return NextResponse.next()
