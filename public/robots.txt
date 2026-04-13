@@ -1,0 +1,11 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /manage
+Disallow: /api
+
+# Host
+Host: https://yehidang.com
+
+# Sitemaps
+Sitemap: https://yehidang.com/sitemap.xml
