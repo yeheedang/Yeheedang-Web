@@ -224,7 +224,7 @@ const secondaryBtnStyle = css`
 `
 
 function generateItemId(categoryId: string): string {
-  return `${categoryId}-${Date.now()}`
+  return `${categoryId}-${crypto.randomUUID()}`
 }
 
 export function ItemFormModal({ categoryId, item, onSave, onClose }: ItemFormModalProps) {

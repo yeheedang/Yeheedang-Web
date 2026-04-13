@@ -304,7 +304,7 @@ const secondaryBtnStyle = css`
 `
 
 function generateImageId(): string {
-  return `g-${Date.now()}`
+  return `g-${crypto.randomUUID()}`
 }
 
 interface ImageModalProps {

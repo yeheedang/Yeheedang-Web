@@ -213,7 +213,11 @@ export function AdminDashboard() {
   }, [fetchMenu, fetchGallery])
 
   const handleLogout = async () => {
-    await axios.delete('/api/admin/auth')
+    try {
+      await axios.delete('/api/admin/auth')
+    } catch {
+      console.error('로그아웃 요청 실패 — 세션이 서버에 남아있을 수 있습니다.')
+    }
     router.push('/manage/login')
   }
 
