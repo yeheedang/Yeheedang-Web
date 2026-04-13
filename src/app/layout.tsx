@@ -18,16 +18,16 @@ const nanumMyeongjo = Nanum_Myeongjo({
   display: 'swap',
 })
 
-const SITE_URL = 'https://www.yeheedang.com'
+const SITE_URL = 'https://www.yehidang.com'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: '예히당 | 한국 전통 디저트 카페',
+    default: '예히당 | 수제 화과자 카페',
     template: '%s | 예히당',
   },
-  description: '15년 경력 셰프의 수제 화과자와 전통 디저트 답례품 전문 카페. 어버이날·스승의날·추석·설날·결혼식 답례품을 예히당에서 준비하세요.',
-  keywords: ['예히당', '화과자', '전통 디저트', '답례품', '수제 디저트', '한국 전통 카페', '미아사거리 카페', '강북구 카페', '화과자 답례품', '전통 답례품'],
+  description: '10년 경력 요리강사의 수제 화과자와 전통 디저트 답례품 전문 카페. 어버이날·스승의날·추석·설날·결혼식 답례품을 예히당에서 준비하세요.',
+  keywords: ['예히당', '화과자', '전통 디저트', '답례품', '수제 디저트', '한국 전통 카페', '미아사거리 카페', '강북구 카페', '화과자 답례품', '전통 답례품', '호두 강정', '오란다 강정', '화과자 카페', '상견례 답례품', '결혼식 답례품', '어버이날 답례품',],
   authors: [{ name: '예히당' }],
   creator: '예히당',
   publisher: '예히당',
@@ -40,8 +40,8 @@ export const metadata: Metadata = {
     locale: 'ko_KR',
     url: SITE_URL,
     siteName: '예히당',
-    title: '예히당 | 한국 전통 디저트 카페',
-    description: '15년 경력 셰프의 수제 화과자와 전통 디저트 답례품 전문 카페. 소중한 순간을 예히당과 함께하세요.',
+    title: '예히당 | 수제 화과자 카페',
+    description: '10년 경력 요리강사의 수제 화과자와 전통 디저트 답례품 전문 카페. 어버이날·스승의날·추석·설날·결혼식 답례품을 예히당에서 준비하세요.',
     images: [
       {
         url: '/og-image.png',
@@ -53,8 +53,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: '예히당 | 한국 전통 디저트 카페',
-    description: '15년 경력 셰프의 수제 화과자와 전통 디저트 답례품 전문 카페.',
+    title: '예히당 | 수제 화과자 카페',
+    description: '10년 경력 요리강사의 수제 화과자와 전통 디저트 답례품 전문 카페. 어버이날·스승의날·추석·설날·결혼식 답례품을 예히당에서 준비하세요.',
     images: ['/og-image.png'],
   },
   alternates: {
