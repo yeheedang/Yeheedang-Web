@@ -24,7 +24,7 @@ async function fetchMenuFromLocal(): Promise<object> {
 }
 
 export async function GET(request: NextRequest) {
-  if (!isAuthenticated(request)) {
+  if (!(await isAuthenticated(request))) {
     return NextResponse.json({ error: '인증이 필요합니다.' }, { status: 401 })
   }
 
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  if (!isAuthenticated(request)) {
+  if (!(await isAuthenticated(request))) {
     return NextResponse.json({ error: '인증이 필요합니다.' }, { status: 401 })
   }
 

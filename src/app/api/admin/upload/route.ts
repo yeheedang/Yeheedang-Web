@@ -39,7 +39,7 @@ async function verifyMagicBytes(file: File): Promise<boolean> {
 }
 
 export async function POST(request: NextRequest) {
-  if (!isAuthenticated(request)) {
+  if (!(await isAuthenticated(request))) {
     return NextResponse.json({ error: '인증이 필요합니다.' }, { status: 401 })
   }
 

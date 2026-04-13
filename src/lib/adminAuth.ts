@@ -1,3 +1,6 @@
+import { NextRequest } from 'next/server'
+
+const ADMIN_COOKIE_NAME = 'yehi_admin_session'
 const HMAC_ALGORITHM = 'SHA-256'
 const SEPARATOR = '.'
 
@@ -72,4 +75,13 @@ export async function isValidSession(token: string): Promise<boolean> {
 export async function extendSession(token: string, maxAgeSec: number): Promise<string | null> {
   if (!(await isValidSession(token))) return null
   return createSessionToken(maxAgeSec)
+}
+
+/**
+ * NextRequest 쿠키에서 세션 토큰을 읽어 검증
+ */
+export async function isAuthenticated(request: NextRequest): Promise<boolean> {
+  const sessionToken = request.cookies.get(ADMIN_COOKIE_NAME)?.value
+  if (!sessionToken) return false
+  return isValidSession(sessionToken)
 }
