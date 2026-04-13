@@ -18,7 +18,7 @@ const nanumMyeongjo = Nanum_Myeongjo({
   display: 'swap',
 })
 
-const SITE_URL = 'https://yehidang.com'
+const SITE_URL = 'https://www.yehidang.com'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
