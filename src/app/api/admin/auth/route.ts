@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { activeSessions } from '@/lib/adminAuth'
+import { createSessionToken } from '@/lib/adminAuth'
 
 const ADMIN_COOKIE_NAME = 'yehi_admin_session'
 const COOKIE_MAX_AGE_SEC = 60 * 60 * 8 // 8시간
@@ -23,10 +23,10 @@ function checkRateLimit(ip: string): boolean {
 
   if (!record || now > record.resetAt) {
     loginAttempts.set(ip, { count: 1, resetAt: now + WINDOW_MS })
-    return false // not limited
+    return false
   }
 
-  if (record.count >= MAX_ATTEMPTS) return true // limited
+  if (record.count >= MAX_ATTEMPTS) return true
 
   record.count += 1
   return false
@@ -58,10 +58,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: '올바르지 않은 토큰입니다.' }, { status: 401 })
   }
 
-  // 인증 성공: Rate Limit 초기화 + 랜덤 세션 토큰 발급
   loginAttempts.delete(ip)
-  const sessionToken = crypto.randomUUID()
-  activeSessions.set(sessionToken, Date.now() + COOKIE_MAX_AGE_SEC * 1000)
+
+  const sessionToken = await createSessionToken(COOKIE_MAX_AGE_SEC)
 
   const response = NextResponse.json({ ok: true })
   response.cookies.set(ADMIN_COOKIE_NAME, sessionToken, {
@@ -75,12 +74,7 @@ export async function POST(request: NextRequest) {
   return response
 }
 
-export async function DELETE(request: NextRequest) {
-  const sessionCookie = request.cookies.get(ADMIN_COOKIE_NAME)
-  if (sessionCookie?.value) {
-    activeSessions.delete(sessionCookie.value)
-  }
-
+export async function DELETE() {
   const response = NextResponse.json({ ok: true })
   response.cookies.delete(ADMIN_COOKIE_NAME)
   return response

@@ -11,14 +11,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: '인증이 필요합니다.' }, { status: 401 })
   }
 
-  const extended = extendSession(sessionToken, COOKIE_MAX_AGE_SEC)
+  const newToken = await extendSession(sessionToken, COOKIE_MAX_AGE_SEC)
 
-  if (!extended) {
+  if (!newToken) {
     return NextResponse.json({ error: '세션이 만료되었습니다. 다시 로그인하세요.' }, { status: 401 })
   }
 
   const response = NextResponse.json({ ok: true, expiresAt: Date.now() + COOKIE_MAX_AGE_SEC * 1000 })
-  response.cookies.set(ADMIN_COOKIE_NAME, sessionToken, {
+  response.cookies.set(ADMIN_COOKIE_NAME, newToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
